@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { mongoDB } from "../app";
+import { mongoDB } from "../index";
 import { Hotel } from "../types/common";
 
 export const getProfiles = async (req: Request, res: Response) => {

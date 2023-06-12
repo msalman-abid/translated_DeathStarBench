@@ -1,4 +1,4 @@
-import { mongoDB } from "../src/app";
+import { mongoDB } from "../src/index";
 import fs from "fs";
 import { Hotel } from "../src/types/common";
 

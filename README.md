@@ -24,7 +24,7 @@ Follow these steps to set up and run the Hotel Reservation microservice:
 
 1. Install dependencies (`npm install`)
 2. Run the project (`npm run dev`)
-3. The server will be running on port 3000 by default. You can change this in the `src/app.ts` file.
+3. The server will be running on port 3000 by default. You can change this in the `src/index.ts` file or through the `PORT` env variable.
 
 Note: [The mongodb-memory-server runs a disposable instance of mongoDB in memory at each invocation of the test suite.](https://www.npmjs.com/package/mongodb-memory-server)
 ## Testing
