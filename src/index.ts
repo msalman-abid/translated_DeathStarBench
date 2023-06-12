@@ -2,14 +2,19 @@ import { MongoClient } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { insertProfileData } from "../cmd/db";
 import app from "./app";
+import { ProfileService } from "./services/profile";
 
 const port = 3000 || process.env.PORT;
 let mongod;
 
 export let mongoDB: MongoClient;
+export let profileService: any;
 
 // define init function
 async function startServer() {
+
+  profileService = new ProfileService({ host: "localhost", port: 50051 });
+
   // Initialize MongoDB
   mongod = await MongoMemoryServer.create({
     instance: { dbName: "profile-db" },
