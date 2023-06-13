@@ -35,7 +35,7 @@ Note:
 
 Send a `POST` request to the `/hotels` endpoint with a list of hotel IDs to fetch their profiles. The request body should be in the following format:
 
-```json
+```javascript
 {
     "HotelIds": ["HotelId1", "HotelId2", ...] // '1', '2', ...
 }
@@ -43,7 +43,7 @@ Send a `POST` request to the `/hotels` endpoint with a list of hotel IDs to fetc
 ### OR
 Send a `gRPC` request to the `localhost:50051` endpoint with a list of hotel IDs to fetch their profiles:
 
-```json
+```javascript
 
 {
   "hotelIds": ["HotelId1", "HotelId2", ...] // '1', '2', ...
