@@ -4,7 +4,7 @@ import { insertProfileData } from "../cmd/db";
 import app from "./app";
 import { ProfileService } from "./services/profile";
 
-const port = 3000 || process.env.PORT;
+const { PORT = 3000, GRPC_PORT = 50051 } = process.env;
 let mongod;
 
 export let mongoDB: MongoClient;
@@ -13,7 +13,7 @@ export let profileService: any;
 // define init function
 async function startServer() {
 
-  profileService = new ProfileService({ host: "localhost", port: 50051 });
+  profileService = new ProfileService({ host: "localhost", port: +GRPC_PORT });
 
   // Initialize MongoDB
   mongod = await MongoMemoryServer.create({
@@ -29,8 +29,8 @@ async function startServer() {
   await insertProfileData();
 
   // Start the server
-  app.listen(port, () => {
-    console.log(`Server started on port ${port}!`);
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}!`);
   });
 }
 

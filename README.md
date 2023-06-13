@@ -25,12 +25,28 @@ Follow these steps to set up and run the Hotel Reservation microservice:
 1. Install dependencies (`npm install`)
 2. Run the project (`npm run dev`)
 3. The server will be running on port 3000 by default. You can change this in the `src/index.ts` file or through the `PORT` env variable.
+4. The port for the gRPC server is set to 50051. You can change this in the `src/index.ts` file or through the `GRPC_PORT` env variable.
 
-Note: [The mongodb-memory-server runs a disposable instance of mongoDB in memory at each invocation of the test suite.](https://www.npmjs.com/package/mongodb-memory-server)
+Note:
+
+- [The mongodb-memory-server runs a disposable instance of mongoDB in memory at each invocation of the test suite.](https://www.npmjs.com/package/mongodb-memory-server)
+
 ## Testing
+
 Send a `POST` request to the `/hotels` endpoint with a list of hotel IDs to fetch their profiles. The request body should be in the following format:
-```
+
+```json
 {
-    "HotelIds": ["HotelId1", "HotelId2", ...] # '1', '2', ...
+    "HotelIds": ["HotelId1", "HotelId2", ...] // '1', '2', ...
 }
-````
+```
+### OR
+Send a `gRPC` request to the `localhost:50051` endpoint with a list of hotel IDs to fetch their profiles:
+
+```json
+
+{
+  "hotelIds": ["HotelId1", "HotelId2", ...] // '1', '2', ...
+  "locale": "officia velit" // unused field
+}
+```
