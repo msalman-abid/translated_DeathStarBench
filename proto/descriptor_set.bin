@@ -1,0 +1,33 @@
+
+§
+proto/profile.protoprofile"=
+Request
+hotelIds (	RhotelIds
+locale (	Rlocale"0
+Result&
+hotels (2.profile.HotelRhotels"Ã
+Hotel
+id (	Rid
+name (	Rname 
+phoneNumber (	RphoneNumber 
+description (	Rdescription*
+address (2.profile.AddressRaddress&
+images (2.profile.ImageRimages"Õ
+Address"
+streetNumber (	RstreetNumber
+
+streetName (	R
+streetName
+city (	Rcity
+state (	Rstate
+country (	Rcountry
+
+postalCode (	R
+postalCode
+lat (Rlat
+lon (Rlon"3
+Image
+url (	Rurl
+default (Rdefault2;
+Profile0
+GetProfiles.profile.Request.profile.Resultbproto3

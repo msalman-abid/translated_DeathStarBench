@@ -3,9 +3,13 @@ import { mongoDB } from "../index";
 import { Hotel } from "../types/common";
 
 import { Server, ServerCredentials } from "@grpc/grpc-js";
+import { addReflection } from 'grpc-server-reflection'
+
+
 import profile_proto from "../config/proto";
 import { ProfileHandlers } from "../../proto/profile/Profile";
 
+// !! DEPRECATED - TEST ROUTE ONLY!!
 export const getProfiles = async (req: Request, res: Response) => {
   //  TODO: get HotelIds from req.HotelIds
   const { HotelIds } = req.body;
@@ -16,9 +20,16 @@ export const getProfiles = async (req: Request, res: Response) => {
   return res.status(200).send(data);
 };
 
+// methods to be attached to the server
 const profileServer: ProfileHandlers = {
   GetProfiles: async (call, callback) => {
     const { hotelIds } = call.request;
+
+    if (!hotelIds || hotelIds.length === 0) {
+      callback(new Error("Invalid hotelIds"));
+      return;
+    }
+
     const collection = mongoDB.db("profile-db").collection("hotels");
     const data = (await collection
       .find({ id: { $in: hotelIds } })
@@ -34,8 +45,11 @@ export class ProfileService {
     this.server = new Server();
     this.server.addService(
       profile_proto.profile.Profile.service,
-      profileServer
+      profileServer // all procedures to be attached
     );
+
+    // add reflection service to be able to use grpcurl/postman
+    addReflection(this.server, 'proto/descriptor_set.bin')
 
     this.server.bindAsync(
       `${host}:${port}`,
