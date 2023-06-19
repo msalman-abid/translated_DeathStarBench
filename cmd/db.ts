@@ -1,6 +1,6 @@
+import { Hotel } from "../proto/profile/Hotel";
 import { mongoDB } from "../src/index";
 import fs from "fs";
-import { Hotel } from "../src/types/common";
 
 export const insertProfileData = async () => {
   const collection = mongoDB.db("profile-db").collection("hotels");

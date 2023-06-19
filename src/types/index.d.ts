@@ -1,11 +1,11 @@
-import { Hotel } from "./common";
+import { Hotel__Output } from "../../proto/profile/Hotel";
 
 export {};
 
 declare global {
   namespace Express {
     interface Response {
-      Hotels: Hotel[];
+      Hotels: Hotel__Output[];
     }
   }
 }

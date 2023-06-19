@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { mongoDB } from "../index";
-import { Hotel } from "../types/common";
 
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { addReflection } from 'grpc-server-reflection'
@@ -8,6 +7,7 @@ import { addReflection } from 'grpc-server-reflection'
 
 import profile_proto from "../config/proto";
 import { ProfileHandlers } from "../../proto/profile/Profile";
+import { Hotel } from "../../proto/profile/Hotel";
 
 // !! DEPRECATED - TEST ROUTE ONLY!!
 export const getProfiles = async (req: Request, res: Response) => {
