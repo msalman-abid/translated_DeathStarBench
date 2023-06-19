@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import { mongoDB } from "../index";
-
 import { Server, ServerCredentials } from "@grpc/grpc-js";
 import { addReflection } from 'grpc-server-reflection'
 
@@ -8,12 +6,13 @@ import { addReflection } from 'grpc-server-reflection'
 import profile_proto from "../config/proto";
 import { ProfileHandlers } from "../../proto/profile/Profile";
 import { Hotel } from "../../proto/profile/Hotel";
+import { MongoDBService } from "../../cmd/db";
 
 // !! DEPRECATED - TEST ROUTE ONLY!!
 export const getProfiles = async (req: Request, res: Response) => {
   //  TODO: get HotelIds from req.HotelIds
   const { HotelIds } = req.body;
-  const collection = mongoDB.db("profile-db").collection("hotels");
+  const collection = MongoDBService.collection;
   const data = (await collection
     .find({ id: { $in: HotelIds } })
     .toArray()) as unknown as Hotel[];
@@ -30,7 +29,7 @@ const profileServer: ProfileHandlers = {
       return;
     }
 
-    const collection = mongoDB.db("profile-db").collection("hotels");
+    const collection = MongoDBService.collection;
     const data = (await collection
       .find({ id: { $in: hotelIds } })
       .toArray()) as unknown as Hotel[];
