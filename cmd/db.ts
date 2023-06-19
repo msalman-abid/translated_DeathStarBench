@@ -8,25 +8,35 @@ export class MongoDBService {
   public static client: MongoClient;
   public static collection: Collection; // profile collection
 
+  // connect to local mongodb
   public static async connectToLocal() {
     this.mongod = await MongoMemoryServer.create({
       instance: { dbName: "profile-db" },
     });
 
-    // Connect to MongoDB
     this.client = new MongoClient(this.mongod.getUri(), {
       monitorCommands: true,
     });
     await this.client.connect();
+    this.collection = this.client.db("profile-db").collection("hotels");
+  }
+
+  // connect to remote mongodb (DeathStarBench)
+  public static async connectToRemote() {
+    const URL = 'mongodb://localhost:27017'
+    this.client = new MongoClient(URL, {
+      monitorCommands: true,
+    });
+    await this.client.connect();
+    this.collection = this.client.db("profile-db").collection("hotels");
   }
 
   public static async disconnect() {
     await this.client.close();
-    await this.mongod.stop();
+    await this.mongod?.stop();
   }
 
   public static async initializeDB() {
-    this.collection = this.client.db("profile-db").collection("hotels");
     this.collection.createIndex({ id: 1 }, { unique: true });
     await this.insertProfileData();
   }

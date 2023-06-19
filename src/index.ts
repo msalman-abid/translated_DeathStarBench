@@ -11,12 +11,14 @@ async function startServer() {
 
   profileService = new ProfileService({ host: "localhost", port: +GRPC_PORT });
 
-  // Initialize MongoDB
-  await MongoDBService.connectToLocal();
+  // Initialize local MongoDB
+  // await MongoDBService.connectToLocal();
+  // await MongoDBService.initializeDB();
 
+  // Initialize remote MongoDB
+  await MongoDBService.connectToRemote();
   
-  await MongoDBService.initializeDB();
-
+  console.log("Connected to MongoDB");
   // Start the server
   app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}!`);
