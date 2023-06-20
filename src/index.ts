@@ -19,10 +19,12 @@ async function startServer() {
   await MongoDBService.connectToRemote();
   
   console.log("Connected to MongoDB");
-  // Start the server
-  app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}!`);
-  });
+  
+  
+  // Start the express server
+  // app.listen(PORT, () => {
+  //   console.log(`Server started on port ${PORT}!`);
+  // });
 }
 
 // start the server
