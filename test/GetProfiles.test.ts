@@ -1,9 +1,6 @@
 import "jest";
 import protoDescriptor from "../src/config/proto";
-
 import { credentials } from "@grpc/grpc-js";
-
-export default protoDescriptor;
 
 const TRANSLATED_PORT = 50051;
 const DEATHSTAR_PORT = 8090;
