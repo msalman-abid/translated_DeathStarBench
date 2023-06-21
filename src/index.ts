@@ -1,8 +1,9 @@
 import { MongoDBService } from "../cmd/db";
 import app from "./app";
+import { CacheService } from "./services/cache";
 import { ProfileService } from "./services/profile";
 
-const { PORT = 3000, GRPC_PORT = 50051 } = process.env;
+const { PORT = 3000, GRPC_PORT = 50051, START_EXPRESS } = process.env;
 
 export let profileService: any;
 
@@ -18,18 +19,18 @@ async function startServer() {
   // Initialize remote MongoDB
   await MongoDBService.connectToRemote();
   
-  console.log("Connected to MongoDB");
-  
-  
+  CacheService.init();
+
   // Start the express server
-  // app.listen(PORT, () => {
-  //   console.log(`Server started on port ${PORT}!`);
-  // });
+  !!START_EXPRESS && app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}!`);
+  });
 }
 
 // start the server
 startServer().catch((error) => {
   console.error("Error starting server:", error);
+  process.exit(1);
 });
 
 // on server close event

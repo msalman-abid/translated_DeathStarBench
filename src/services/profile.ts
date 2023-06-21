@@ -1,41 +1,11 @@
 import { Request, Response } from "express";
 import { Server, ServerCredentials } from "@grpc/grpc-js";
-import { addReflection } from 'grpc-server-reflection'
-
+import { addReflection } from "grpc-server-reflection";
 
 import profile_proto from "../config/proto";
-import { ProfileHandlers } from "../../proto/profile/Profile";
 import { Hotel } from "../../proto/profile/Hotel";
 import { MongoDBService } from "../../cmd/db";
-
-// !! DEPRECATED - TEST ROUTE ONLY!!
-export const getProfiles = async (req: Request, res: Response) => {
-  //  TODO: get HotelIds from req.HotelIds
-  const { HotelIds } = req.body;
-  const collection = MongoDBService.collection;
-  const data = (await collection
-    .find({ id: { $in: HotelIds } })
-    .toArray()) as unknown as Hotel[];
-  return res.status(200).send(data);
-};
-
-// methods to be attached to the server
-const profileServer: ProfileHandlers = {
-  GetProfiles: async (call, callback) => {
-    const { hotelIds } = call.request;
-
-    if (!hotelIds || hotelIds.length === 0) {
-      callback(new Error("Invalid hotelIds"));
-      return;
-    }
-
-    const collection = MongoDBService.collection;
-    const data = (await collection
-      .find({ id: { $in: hotelIds } })
-      .toArray()) as unknown as Hotel[];
-    callback(null, { hotels: data });
-  },
-};
+import { profileHandlers } from "../handlers/profile";
 
 export class ProfileService {
   private server: any;
@@ -44,11 +14,11 @@ export class ProfileService {
     this.server = new Server();
     this.server.addService(
       profile_proto.profile.Profile.service,
-      profileServer // all procedures to be attached
+      profileHandlers // all procedures to be attached
     );
 
     // add reflection service to be able to use grpcurl/postman
-    addReflection(this.server, 'proto/descriptor_set.bin')
+    addReflection(this.server, "proto/descriptor_set.bin");
 
     this.server.bindAsync(
       `${host}:${port}`,
@@ -63,3 +33,14 @@ export class ProfileService {
     );
   }
 }
+
+// !! DEPRECATED - TEST ROUTE ONLY!!
+export const getProfiles = async (req: Request, res: Response) => {
+  //  TODO: get HotelIds from req.HotelIds
+  const { HotelIds } = req.body;
+  const collection = MongoDBService.collection;
+  const data = (await collection
+    .find({ id: { $in: HotelIds } })
+    .toArray()) as unknown as Hotel[];
+  return res.status(200).send(data);
+};

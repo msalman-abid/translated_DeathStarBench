@@ -17,8 +17,12 @@ export class MongoDBService {
     this.client = new MongoClient(this.mongod.getUri(), {
       monitorCommands: true,
     });
-    await this.client.connect();
+
+    await this.client.connect().catch((err) => {throw err.message});
+    
     this.collection = this.client.db("profile-db").collection("hotels");
+
+    console.log("Connected to local MongoDB");
   }
 
   // connect to remote mongodb (DeathStarBench)
@@ -27,8 +31,12 @@ export class MongoDBService {
     this.client = new MongoClient(URL, {
       monitorCommands: true,
     });
-    await this.client.connect();
+    await this.client.connect().catch((err) => {throw err.message});
+
     this.collection = this.client.db("profile-db").collection("hotels");
+
+    console.log("Connected to remote MongoDB");
+
   }
 
   public static async disconnect() {
