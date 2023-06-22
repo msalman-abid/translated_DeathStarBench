@@ -1,6 +1,8 @@
 import { ProfileClient } from "../../proto/profile/Profile";
-import protoDescriptor from "../../src/config/proto";
+import { Result } from "../../proto/profile/Result";
 import { credentials } from "@grpc/grpc-js";
+
+import protoDescriptor from "../../src/config/proto";
 
 export const getClient = (port: number) => {
   return new protoDescriptor.profile.Profile(
@@ -37,3 +39,9 @@ export const fetchProfiles = async (
     });
   });
 };
+
+export const sortHotelResult = (result: Result) => {
+  result.hotels.sort((a, b) => {
+    return Number(a.id) - Number(b.id);
+  });
+}
