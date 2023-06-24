@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev ./src/index.ts",
     "build": "tsc",
-    "test": "jest"
+    "start": "node dist/src/index.js",
+    "postbuild": "cp -r ./proto/*.proto ./dist/proto"
   },
   "author": "",
   "license": "ISC",
