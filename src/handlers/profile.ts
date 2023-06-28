@@ -42,11 +42,14 @@ export const profileHandlers: ProfileHandlers = {
       (id) => !cachedDataArray.find((hotel) => hotel.id === id)
     );
 
-    // query the DB for the missing hotelIds
-    const data = (await collection
-      .find({ id: { $in: missingHotelIds } })
-      .toArray()) as unknown as Hotel[];
+    // query the DB for the missing hotelIds separately for each ID
+    const dataPromises = missingHotelIds.map((id) =>
+      collection.findOne({ id: id })
+    );
 
+    // wait for all the promises to resolve
+    const data = await Promise.all(dataPromises) as Hotel[];
+ 
     // add the missing hotelIds to the cache
     data.forEach((hotel) => {
       CacheService.set(hotel.id, hotel);
