@@ -27,12 +27,13 @@ export class MongoDBService {
 
   // connect to remote mongodb (DeathStarBench)
   public static async connectToRemote() {
-    const URL = 'mongodb://localhost:27017'
+    const { MONGO_PORT } = process.env;
+    const URL = 'mongodb://localhost:' + MONGO_PORT;
     this.client = new MongoClient(URL, {
       monitorCommands: true,
     });
+    
     await this.client.connect().catch((err) => {throw err.message});
-
     this.collection = this.client.db("profile-db").collection("hotels");
 
     console.log("Connected to remote MongoDB");

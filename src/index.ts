@@ -1,7 +1,12 @@
-import { MongoDBService } from "../cmd/db";
 import app from "./app";
+import dotenv from "dotenv";
+
 import { CacheService } from "./services/cache";
+import { MongoDBService } from "../cmd/db";
 import { ProfileService } from "./services/profile";
+
+// load env
+dotenv.config();
 
 const { PORT = 3000, GRPC_PORT = 50051, START_EXPRESS } = process.env;
 

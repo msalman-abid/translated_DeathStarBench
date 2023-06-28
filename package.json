@@ -7,7 +7,8 @@
     "dev": "ts-node-dev ./src/index.ts",
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "postbuild": "cp -r ./proto/*.proto ./dist/proto"
+    "postbuild": "cp -r ./proto/*.proto ./dist/proto",
+    "test": "jest --verbose --coverage"
   },
   "author": "",
   "license": "ISC",
@@ -15,9 +16,11 @@
     "@grpc/grpc-js": "^1.8.15",
     "@grpc/proto-loader": "^0.7.7",
     "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "grpc-server-reflection": "^0.1.5",
     "grpc-tools": "^1.12.4",
+    "memcached": "^2.2.2",
     "mongodb": "^4.16.0",
     "mongodb-memory-server": "^8.12.2",
     "node-cache": "^5.1.2",
