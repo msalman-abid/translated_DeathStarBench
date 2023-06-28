@@ -7,16 +7,21 @@ import { CacheService } from "../services/cache";
 export const profileHandlers: ProfileHandlers = {
   GetProfiles: async (call, callback) => {
     const { hotelIds } = call.request;
+    const { collection } = MongoDBService;
 
     if (!hotelIds || hotelIds.length === 0) {
       callback(new Error("Invalid hotelIds"));
       return;
     }
-    const collection = MongoDBService.collection;
-    const cache = CacheService.cache;
 
     // find if the hotelIds exist in the cache
-    const cachedData = cache.mget(hotelIds);
+    const cachedData = await CacheService.getMulti(hotelIds);
+
+    // if error in fetching from cache
+    if (cachedData instanceof Error) {
+      callback(cachedData);
+      return;
+    }
 
     // convert the cached data to an array of hotels
     const cachedDataArray = Array.from(Object.values(cachedData)) as Hotel[];
@@ -40,7 +45,7 @@ export const profileHandlers: ProfileHandlers = {
 
     // add the missing hotelIds to the cache
     data.forEach((hotel) => {
-      cache.set(hotel.id, hotel);
+      CacheService.set(hotel.id, hotel);
       console.log(`Added ${hotel.id} to cache`);
     });
 
