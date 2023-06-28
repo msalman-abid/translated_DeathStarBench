@@ -9,29 +9,31 @@ export class CacheService {
     const { MEMCACHED_PORT } = process.env;
     CacheService.cache = new Memcached(`localhost:${MEMCACHED_PORT}`);
     CacheService.memcTimeout = +process.env.MEMC_TIMEOUT;
-    CacheService.cache.flush((err) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log("Memcached flushed");
-    }
-    );
   }
 
   public static async getMulti(hotelIds: string[]) {
+    // prepend 'translated-' to the hotelIds
+    const alteredHotelIDs = hotelIds.map((hotelId) => 'translated-' + hotelId);
+
     return new Promise((resolve, reject) => {
-      CacheService.cache.getMulti(hotelIds, (err, data) => {
+      CacheService.cache.getMulti(alteredHotelIDs, (err, data) => {
         if (err) {
           reject(err);
         }
-        resolve(data);
+
+        // extract all values from the data object and return
+        resolve(Object.values(data));
+
       });
     });
   }
 
   public static async set(hotelId: string, data: Hotel) {
+    // prepend 'translated-' to the hotelId
+    const alteredHotelID = 'translated-' + hotelId;
+
     return new Promise((resolve, reject) => {
-      CacheService.cache.set(hotelId, data, this.memcTimeout, (err) => {
+      CacheService.cache.set(alteredHotelID, data, this.memcTimeout, (err) => {
         if (err) {
           reject(err);
         }
