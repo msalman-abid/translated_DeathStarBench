@@ -1,12 +1,10 @@
 import app from "./app";
-import dotenv from "dotenv";
+import "dotenv/config"; // load env 
 
 import { CacheService } from "./services/cache";
 import { MongoDBService } from "../cmd/db";
 import { ProfileService } from "./services/profile";
 
-// load env
-dotenv.config();
 
 const { PORT = 3000, GRPC_PORT = 50051, START_EXPRESS } = process.env;
 
@@ -27,7 +25,7 @@ async function startServer() {
   CacheService.init();
 
   // Start the express server
-  !!START_EXPRESS && app.listen(PORT, () => {
+  +START_EXPRESS && app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}!`);
   });
 }
