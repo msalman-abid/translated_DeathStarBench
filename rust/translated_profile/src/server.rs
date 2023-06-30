@@ -36,7 +36,7 @@ impl Profile for ProfileService {
 
 #[tokio::main]
 async fn main() {
-    let addr = "[::1]:5252".parse().unwrap();
+    let addr = "127.0.0.1:5252".parse().unwrap();
 
     let profile_service = ProfileService {};
 
