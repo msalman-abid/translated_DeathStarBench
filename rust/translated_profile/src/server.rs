@@ -5,23 +5,13 @@ pub mod profile {
     tonic::include_proto!("profile");
 }
 
-use mongodb::bson::doc;
 use profile::profile_server::{Profile, ProfileServer};
-use profile::Hotel;
 use tonic::transport::Server;
 use tonic::{Response, Status};
 
-pub mod mongo {
-    use mongodb::{options::ClientOptions, Client};
-    pub async fn get_mongo_client() -> Client {
-        let client_options = ClientOptions::parse("mongodb://localhost:27017")
-            .await
-            .unwrap();
-        let client = Client::with_options(client_options).unwrap();
-        return client
-    }
-}
+use mongo::mongo_service;
 
+mod mongo;
 
 #[tonic::async_trait]
 impl Profile for ProfileService {
@@ -30,24 +20,20 @@ impl Profile for ProfileService {
         request: tonic::Request<profile::Request>,
     ) -> Result<tonic::Response<profile::Result>, Status> {
         println!("Got a request: {:?}", request);
-        let address1 = profile::Address::default();
 
-        let reply = Hotel {
-            id: '1'.into(),
-            name: "Hotel California".into(),
-            address: Some(address1),
-            phone_number: "555-1234".into(),
-            ..Default::default()
+        // access the hotelIds from the request
+        let hotel_ids = request.into_inner().hotel_ids;
+
+        let hotels_from_db = mongo_service::get_hotels(hotel_ids).await;
+
+        let reply: profile::Result = profile::Result {
+            hotels: hotels_from_db,
         };
 
-        let reply_obj = profile::Result {
-            hotels: vec![reply],
-        };
-
-        Ok(Response::new(reply_obj))
+        Ok(Response::new(reply))
     }
-
 }
+
 #[tokio::main]
 async fn main() {
     let addr = "[::1]:5252".parse().unwrap();
@@ -56,9 +42,7 @@ async fn main() {
 
     let svc = ProfileServer::new(profile_service);
 
-    let mongo_client = mongo::get_mongo_client().await;
-    let db = mongo_client.database("profile-db");
-    let collection = db.collection("hotels") as mongodb::Collection<mongodb::bson::Document>;
+    mongo_service::init_client().await;
 
     println!("Server listening on {}", addr);
 
@@ -67,5 +51,4 @@ async fn main() {
         .serve(addr)
         .await
         .unwrap();
-
 }
