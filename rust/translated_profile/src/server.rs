@@ -84,7 +84,7 @@ async fn main() {
     mongo_service::init_client().await;
     cache_service::init_client();
 
-    cache_service::get_client().unwrap().flush().unwrap();
+    // cache_service::get_client().unwrap().flush().unwrap();
 
     println!("Server listening on {}", addr);
 
