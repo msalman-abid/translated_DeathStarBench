@@ -2,14 +2,14 @@ pub mod mongo_service {
 
     use lazy_static::lazy_static;
     use mongodb::{bson::doc, options::ClientOptions, Client};
-    use std::{collections::HashSet, sync::Mutex};
+    use std::sync::Mutex;
 
     use crate::profile::Hotel;
 
     // Database constants
-    pub const MONGO_URL: &str = "mongodb://localhost:27017";
-    pub const DB_NAME: &str = "profile-db";
-    pub const COLLECTION_NAME: &str = "hotels";
+    const MONGO_URL: &str = "mongodb://localhost:27017";
+    const DB_NAME: &str = "profile-db";
+    const COLLECTION_NAME: &str = "hotels";
 
     lazy_static! {
         static ref CLIENT: Mutex<Option<Client>> = Mutex::new(None);
@@ -38,15 +38,11 @@ pub mod mongo_service {
         let mongo_client = get_client().unwrap();
         let collection = get_collection(mongo_client);
 
-        // eliminate duplicates by making a set and then converting back to a vector
-        let hotel_ids_set: HashSet<String> = hotel_ids.into_iter().collect();
-        let hotel_ids_set: Vec<String> = hotel_ids_set.into_iter().collect();
-
         // create empty vector for returning Hotels
         let mut hotels: Vec<Hotel> = Vec::new();
 
         //  get all hotels from the database through a loop
-        for hotel_id in hotel_ids_set {
+        for hotel_id in hotel_ids {
             let filter = doc! { "id": hotel_id };
             let result = collection.find_one(filter, None).await;
 
