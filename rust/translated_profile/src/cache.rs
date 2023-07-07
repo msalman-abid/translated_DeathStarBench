@@ -29,25 +29,51 @@ pub mod cache_service {
             return Vec::new();
         }
 
-        let cache_client: Client = get_client().unwrap() as memcache::Client;
+        let cache_client: Client = get_client().unwrap();
 
         // create empty vector for returning Hotels
         let mut hotels: Vec<Hotel> = Vec::new();
 
-        // get all hotels from the cache through a loop
-        for hotel_id in hotel_ids {
-            let hotel = cache_client.get(&hotel_id).unwrap() as Option<Vec<u8>>;
+        /*
+         * Using the .get() method in a loop
+         */
+        /*
 
-            // if the hotel exists, add it to the vector
-            if let Some(hotel) = hotel {
-                let hotel: Hotel = serde_json::from_slice(&hotel).unwrap();
+        * for hotel_id in hotel_ids {
+        *     let hotel = cache_client.get(&hotel_id).unwrap();
+        *
+        *     // if the hotel exists, add it to the vector
+        *     if let Some(hotel) = hotel {
+        *         let hotel: Hotel = serde_json::from_slice(&hotel).unwrap();
+        *
+        *         // log
+        *         println!("Hotel found in cache: {:?}", hotel.id);
+        *
+        *         hotels.push(hotel);
+        *     }
+        * }
+        */
 
-                // log
-                println!("Hotel found in cache: {:?}", hotel.id);
+        /*
+         * Using the .gets() method in a loop
+         */
 
-                hotels.push(hotel);
-            }
-        }
+        // transform hotel_ids Strings to str slices
+        let hotel_ids_transformed: Vec<&str> =
+            hotel_ids.iter().map(|hotel_id| hotel_id.as_str()).collect();
+
+        let cached_hotels_map: std::collections::HashMap<String, String> =
+            cache_client.gets(&hotel_ids_transformed[..]).unwrap();
+
+        //  get all values from the HashMap cached_hotels
+        let cached_hotels_values: Vec<&String> = cached_hotels_map.values().collect();
+
+        // transform the Vec<Vec<u8>> to Vec<Hotel>
+        let cached_hotels: Vec<Hotel> = cached_hotels_values
+            .iter()
+            .map(|hotel| serde_json::from_str(&hotel).unwrap())
+            .collect();
+        hotels.extend(cached_hotels);
 
         // extend the hotel_vec with the hotels from the cache
         return hotels;
@@ -60,7 +86,7 @@ pub mod cache_service {
 
         let cache_client = get_client().unwrap();
 
-        println!("Hotel inserting in cache: {:?}", hotel.id);
+        // println!("Hotel inserting in cache: {:?}", hotel.id);
 
         let hotel_string = serde_json::to_string(&hotel).unwrap();
 

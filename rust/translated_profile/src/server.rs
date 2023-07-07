@@ -25,7 +25,7 @@ impl Profile for ProfileService {
         &self,
         request: tonic::Request<profile::Request>,
     ) -> Result<tonic::Response<profile::Result>, Status> {
-        println!("Got a request: {:?}", request);
+        // println!("Got a request: {:?}", request);
 
         // access the hotelIds from the request
         let hotel_ids = request.into_inner().hotel_ids;
@@ -37,12 +37,12 @@ impl Profile for ProfileService {
         // create empty vector for returning Hotels
         let mut hotels: Vec<profile::Hotel> = Vec::new();
 
-        // get all possible hotels from the cache
+        // get hotels from the cache
         hotels.extend(cache_service::get_hotels(hotel_ids.clone()));
 
         // if all hotels were found in the cache, return them
         if hotels.len() == hotel_ids.len() {
-            println!("All {:?} hotels found in cache", hotels.len());
+            // println!("All {:?} hotels found in cache", hotels.len());
 
             let reply: profile::Result = profile::Result { hotels: hotels };
             return Ok(Response::new(reply));
@@ -56,16 +56,18 @@ impl Profile for ProfileService {
 
         let hotels_from_db = mongo_service::get_hotels(hotel_ids).await;
 
-        // add all hotels from the database to the cache
         for hotel in hotels_from_db.clone() {
-            let hotel_id = hotel.id.clone();
-
             hotels.push(hotel.clone().into());
-
-            task::spawn(async move {
-                cache_service::set_hotel(hotel_id, hotel);
-            });
         }
+        
+        // async thread to add all hotels from the database to the cache
+        task::spawn(async move {
+            for hotel in hotels_from_db {
+                let hotel_id = hotel.id.clone();
+
+                cache_service::set_hotel(hotel_id, hotel);
+            }
+        });
 
         let reply: profile::Result = profile::Result { hotels: hotels };
 
